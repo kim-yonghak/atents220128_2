@@ -13,7 +13,7 @@ public class Player : MonoBehaviour
     /// S : 후진
     /// A : 좌회전
     /// D : 우회전
-    /// 
+    /// ㅁㄴㅇㅁㄴㅇㅁㄴㅇ
 
     public float moveSpeed = 5.0f;      // 플레이어 이동 속도(기본값 1초에 5)
     public float spinSpeed = 360.0f;    // 플레이어 회전 속도(기본값 1초에 한바퀴)
@@ -23,11 +23,13 @@ public class Player : MonoBehaviour
     private Animator anim = null;       // 애니메이터 컴포넌트
 
     private PlayerControls pc = null;   // 입력 처리용 클래스
+    private Rigidbody rigid = null;
 
     // 오브젝트가 만들어진 직후에 실행 1212
     private void Awake()
     {
         anim = GetComponent<Animator>();    // 애니메이터 컴포넌트 찾아서 보관
+        rigid = GetComponent<Rigidbody>();
         pc = new PlayerControls();          // Input Action Asset을 이용해 자동 생성한 클래스
         // PlayerDefault라는 액션맵에 있는 UseItem 액션이 starte일 때 UseItem 함수 실행하도록 바인딩
         pc.PlayerDefault.UseItem.started += UseItem;    
@@ -45,14 +47,28 @@ public class Player : MonoBehaviour
         pc.PlayerDefault.Disable();     //액션 맵도 함께 비활성화
     }
 
-    // 매 프레임마다
-    private void Update()
-    {
-        // 이동 처리 (1초에 moveSpeed만큼 moveInput쪽 방향(앞or뒤)으로 이동)
-        transform.Translate(Vector3.forward * moveInput * moveSpeed * Time.deltaTime);
+    //// 매 프레임마다
+    //private void Update()
+    //{
+    //    // 이동 처리 (1초에 moveSpeed만큼 moveInput쪽 방향(앞or뒤)으로 이동)
+    //    transform.Translate(Vector3.forward * moveInput * moveSpeed * Time.deltaTime);
 
-        // 회전 처리 (1초에 spinSpeed만큼 spinInput쪽 방향(우or좌)로 회전)
-        transform.Rotate(Vector3.up, spinInput * spinSpeed * Time.deltaTime);
+    //    // 회전 처리 (1초에 spinSpeed만큼 spinInput쪽 방향(우or좌)로 회전)
+    //    transform.Rotate(Vector3.up, spinInput * spinSpeed * Time.deltaTime);
+    //}
+
+    // Time.fixedDeltaTime 간격으로 실행
+    private void FixedUpdate()
+    {
+        // 현재 위치 + 캐릭터가 바라보는 방향으로 1초에 moveSpeed씩 이동
+        rigid.MovePosition(
+            rigid.position + 
+            transform.forward * moveInput * moveSpeed * Time.fixedDeltaTime);
+
+        // 현재 각도 * 추가각도
+        rigid.MoveRotation(
+            rigid.rotation * 
+            Quaternion.AngleAxis(spinInput * spinSpeed * Time.fixedDeltaTime, Vector3.up) );
     }
 
     // WASD를 눌렀을 때 실행될 함수
