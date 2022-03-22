@@ -25,7 +25,7 @@ public class Player : MonoBehaviour
     private PlayerControls pc = null;   // 입력 처리용 클래스
     private Rigidbody rigid = null;
 
-    // 오브젝트가 만들어진 직후에 실행 1212
+    // 오브젝트가 만들어진 직후에 실행
     private void Awake()
     {
         anim = GetComponent<Animator>();    // 애니메이터 컴포넌트 찾아서 보관
